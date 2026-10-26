@@ -21,3 +21,9 @@ def test_public_leaderboard_shows_clubs_sorted_by_points(monkeypatch):
     assert "Club Low" in page
     assert page.index("Club High") < page.index("Club Middle")
     assert page.index("Club Middle") < page.index("Club Low")
+
+def test_stylesheet_is_available():
+    response = server.app.test_client().get("/static/style.css")
+
+    assert response.status_code == 200
+    assert "--ink:" in response.get_data(as_text=True)

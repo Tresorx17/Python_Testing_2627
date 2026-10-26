@@ -5,3 +5,12 @@ lib
 tests/
 .envrc
 __pycache__
+# Temporary outputs from local test and coverage runs
+.pytest-css-*/
+.pytest-coverage-*/
+.pip-temp-css/
+.coverage
+.coverage.*
+htmlcov/
+.perf-run/
+.pytest-report-*/

@@ -3,13 +3,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GUDLFT Registration</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>Welcome to the GUDLFT Registration Portal!</h1>
     Please enter your secretary email to continue:
 {% with messages = get_flashed_messages() %}
 {% if messages %}
-<ul>
+<ul class="messages">
     {% for message in messages %}
     <li>{{ message }}</li>
     {% endfor %}
