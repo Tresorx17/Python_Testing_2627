@@ -55,3 +55,22 @@ def test_successful_booking_deducts_club_points(monkeypatch):
     assert response.status_code == 200
     assert club["points"] == "3"
     assert competition["numberOfPlaces"] == "8"
+def test_booking_rejected_when_competition_has_too_few_places(monkeypatch):
+    club = {"name": "Test Club", "email": "test@example.com", "points": "5"}
+    competition = {
+        "name": "Test Competition",
+        "numberOfPlaces": "1",
+        "date": "2030-01-01 10:00:00",
+    }
+    monkeypatch.setattr(server, "clubs", [club])
+    monkeypatch.setattr(server, "competitions", [competition])
+
+    response = server.app.test_client().post(
+        "/purchasePlaces",
+        data={"club": "Test Club", "competition": "Test Competition", "places": "2"},
+    )
+
+    assert response.status_code == 200
+    assert "Not enough places" in response.get_data(as_text=True)
+    assert club["points"] == "5"
+    assert competition["numberOfPlaces"] == "1"
