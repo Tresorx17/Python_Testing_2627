@@ -57,16 +57,16 @@ def book(competition, club):
         competition=foundCompetition,
     )
 
-@app.route('/purchasePlaces',methods=['POST'])
+@app.route("/purchasePlaces", methods=["POST"])
 def purchasePlaces():
     competition_name = request.form.get("competition", "")
     club_name = request.form.get("club", "")
 
     competition = next(
-        (c for c in competitions if c["name"] == competition_name),
+        (item for item in competitions if item["name"] == competition_name),
         None,
     )
-    club = next((c for c in clubs if c["name"] == club_name), None)
+    club = next((item for item in clubs if item["name"] == club_name), None)
 
     if competition is None or club is None:
         flash("Club ou compétition introuvable.")
@@ -75,49 +75,60 @@ def purchasePlaces():
     try:
         places_required = int(request.form.get("places", ""))
         points_available = int(club["points"])
+        places_available = int(competition["numberOfPlaces"])
     except (TypeError, ValueError):
-        flash("Veuillez entrer un nombre de places valide.")
+        flash("Veuillez entrer des données de réservation valides.")
         return render_template(
             "welcome.html", club=club, competitions=competitions
         )
+
     if places_required <= 0:
         flash("Please enter a positive number of places.")
         return render_template(
             "welcome.html", club=club, competitions=competitions
         )
+
     if places_required > 12:
         flash("A maximum of 12 places can be booked.")
         return render_template(
             "welcome.html", club=club, competitions=competitions
         )
+
     if places_required > points_available:
         flash("Not enough points")
         return render_template(
             "welcome.html", club=club, competitions=competitions
         )
-    if places_required > int(competition["numberOfPlaces"]):
+
+    if places_required > places_available:
         flash("Not enough places")
         return render_template(
             "welcome.html", club=club, competitions=competitions
         )
 
-    competition["numberOfPlaces"] = str(
-        int(competition["numberOfPlaces"]) - places_required
-    )
     club["points"] = str(points_available - places_required)
+    competition["numberOfPlaces"] = str(places_available - places_required)
 
-    with open(os.path.join(DATA_DIR, "clubs.json"), "w") as clubs_file:
-        json.dump({"clubs": clubs}, clubs_file, indent=4)
+    try:
+        with open(os.path.join(DATA_DIR, "clubs.json"), "w") as clubs_file:
+            json.dump({"clubs": clubs}, clubs_file, indent=4)
 
-    with open(
-        os.path.join(DATA_DIR, "competitions.json"), "w"
-    ) as competitions_file:
-        json.dump({"competitions": competitions}, competitions_file, indent=4)
+        with open(
+            os.path.join(DATA_DIR, "competitions.json"), "w"
+        ) as competitions_file:
+            json.dump({"competitions": competitions}, competitions_file, indent=4)
+    except OSError:
+        club["points"] = str(points_available)
+        competition["numberOfPlaces"] = str(places_available)
+        flash("Booking could not be saved. Please try again.")
+        return render_template(
+            "welcome.html", club=club, competitions=competitions
+        )
+
     flash("Great-booking complete!")
     return render_template(
         "welcome.html", club=club, competitions=competitions
     )
-
 @app.route("/leaderboard")
 def leaderboard():
     ranked_clubs = sorted(
