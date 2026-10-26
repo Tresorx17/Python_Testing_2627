@@ -78,7 +78,11 @@ def purchasePlaces():
         return render_template(
             "welcome.html", club=club, competitions=competitions
         )
-
+    if places_required <= 0:
+        flash("Please enter a positive number of places.")
+        return render_template(
+            "welcome.html", club=club, competitions=competitions
+        )
     if places_required > points_available:
         flash("Not enough points")
         return render_template(
