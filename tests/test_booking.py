@@ -131,3 +131,37 @@ def test_successful_booking_saves_changes_to_json(monkeypatch, tmp_path):
     assert response.status_code == 200
     assert saved_clubs["clubs"][0]["points"] == "3"
     assert saved_competitions["competitions"][0]["numberOfPlaces"] == "8"
+def test_booking_rejected_above_twelve_places(monkeypatch, tmp_path):
+    club = {"name": "Test Club", "email": "test@example.com", "points": "13"}
+    competition = {
+        "name": "Test Competition",
+        "numberOfPlaces": "25",
+        "date": "2030-01-01 10:00:00",
+    }
+
+    monkeypatch.setattr(server, "DATA_DIR", str(tmp_path))
+    monkeypatch.setattr(server, "clubs", [club])
+    monkeypatch.setattr(server, "competitions", [competition])
+
+    (tmp_path / "clubs.json").write_text(
+        json.dumps({"clubs": [club]}), encoding="utf-8"
+    )
+    (tmp_path / "competitions.json").write_text(
+        json.dumps({"competitions": [competition]}), encoding="utf-8"
+    )
+
+    response = server.app.test_client().post(
+        "/purchasePlaces",
+        data={
+            "club": "Test Club",
+            "competition": "Test Competition",
+            "places": "13",
+        },
+    )
+
+    page = response.get_data(as_text=True)
+    assert response.status_code == 200
+    assert "12 places" in page
+    assert club["points"] == "13"
+    assert competition["numberOfPlaces"] == "25"
+
