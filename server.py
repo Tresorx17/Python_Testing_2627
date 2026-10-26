@@ -1,3 +1,4 @@
+import os
 import json
 from flask import Flask,render_template,request,redirect,flash,url_for
 
@@ -15,6 +16,7 @@ def loadCompetitions():
 
 
 app = Flask(__name__)
+DATA_DIR = app.root_path
 app.secret_key = 'something_special'
 
 competitions = loadCompetitions()
@@ -99,17 +101,26 @@ def purchasePlaces():
     )
     club["points"] = str(points_available - places_required)
 
-    with open("clubs.json", "w") as clubs_file:
+    with open(os.path.join(DATA_DIR, "clubs.json"), "w") as clubs_file:
         json.dump({"clubs": clubs}, clubs_file, indent=4)
 
-    with open("competitions.json", "w") as competitions_file:
+    with open(
+        os.path.join(DATA_DIR, "competitions.json"), "w"
+    ) as competitions_file:
         json.dump({"competitions": competitions}, competitions_file, indent=4)
     flash("Great-booking complete!")
     return render_template(
         "welcome.html", club=club, competitions=competitions
     )
 
-# TODO: Add route for points display
+@app.route("/leaderboard")
+def leaderboard():
+    ranked_clubs = sorted(
+        clubs,
+        key=lambda club: int(club["points"]),
+        reverse=True,
+    )
+    return render_template("leaderboard.html", clubs=ranked_clubs)
 
 
 @app.route('/logout')

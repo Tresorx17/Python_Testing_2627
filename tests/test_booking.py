@@ -107,7 +107,7 @@ def test_successful_booking_saves_changes_to_json(monkeypatch, tmp_path):
         "date": "2030-01-01 10:00:00",
     }
 
-    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(server, "DATA_DIR", str(tmp_path))
     (tmp_path / "clubs.json").write_text(
         json.dumps({"clubs": [club]}), encoding="utf-8"
     )
