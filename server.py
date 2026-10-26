@@ -99,6 +99,11 @@ def purchasePlaces():
     )
     club["points"] = str(points_available - places_required)
 
+    with open("clubs.json", "w") as clubs_file:
+        json.dump({"clubs": clubs}, clubs_file, indent=4)
+
+    with open("competitions.json", "w") as competitions_file:
+        json.dump({"competitions": competitions}, competitions_file, indent=4)
     flash("Great-booking complete!")
     return render_template(
         "welcome.html", club=club, competitions=competitions

@@ -1,3 +1,4 @@
+import json
 import pytest
 import server
 
@@ -98,3 +99,35 @@ def test_booking_rejected_when_places_are_not_positive(monkeypatch, places):
     assert "positive number" in response.get_data(as_text=True)
     assert club["points"] == "5"
     assert competition["numberOfPlaces"] == "10"
+def test_successful_booking_saves_changes_to_json(monkeypatch, tmp_path):
+    club = {"name": "Test Club", "email": "test@example.com", "points": "5"}
+    competition = {
+        "name": "Test Competition",
+        "numberOfPlaces": "10",
+        "date": "2030-01-01 10:00:00",
+    }
+
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "clubs.json").write_text(
+        json.dumps({"clubs": [club]}), encoding="utf-8"
+    )
+    (tmp_path / "competitions.json").write_text(
+        json.dumps({"competitions": [competition]}), encoding="utf-8"
+    )
+
+    monkeypatch.setattr(server, "clubs", [club])
+    monkeypatch.setattr(server, "competitions", [competition])
+
+    response = server.app.test_client().post(
+        "/purchasePlaces",
+        data={"club": "Test Club", "competition": "Test Competition", "places": "2"},
+    )
+
+    saved_clubs = json.loads((tmp_path / "clubs.json").read_text(encoding="utf-8"))
+    saved_competitions = json.loads(
+        (tmp_path / "competitions.json").read_text(encoding="utf-8")
+    )
+
+    assert response.status_code == 200
+    assert saved_clubs["clubs"][0]["points"] == "3"
+    assert saved_competitions["competitions"][0]["numberOfPlaces"] == "8"
