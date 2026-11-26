@@ -93,9 +93,6 @@ def test_browser_booking_updates_points_and_available_places(browser, live_serve
     booking_link.click()
     places = browser.find_element(By.ID, "places")
     places.send_keys("2")
-    booking_link.click()
-    places = browser.find_element(By.ID, "places")
-    places.send_keys("2")
     browser.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
 
     WebDriverWait(browser, 10).until(
