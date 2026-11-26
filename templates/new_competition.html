@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#071426">
+    <title>Ajouter un événement | GUDLFT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+    <header class="topbar">
+        <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">G</span><span>GUDLFT <small>CLUB PORTAL</small></span></a>
+        <nav class="top-nav"><a href="{{ url_for('leaderboard') }}">Classement</a><a href="{{ url_for('index') }}">Accueil</a></nav>
+    </header>
+    <main class="narrow-content">
+        <a class="back-link" href="{{ url_for('index') }}">← Retour à l’accueil</a>
+        <section class="event-form-layout">
+            <div>
+                <p class="eyebrow">CALENDRIER DES COMPÉTITIONS</p>
+                <h1>Créer un événement</h1>
+                <p class="hero-copy">Ajoutez une compétition. Elle apparaîtra automatiquement dans les événements à venir, triée selon sa date.</p>
+                <p class="form-tip"><strong>À vérifier avant l’enregistrement</strong><br>Choisissez une date future et un nombre de places supérieur à zéro.</p>
+            </div>
+            <section class="booking-card">
+                <h2>Détails de l’événement</h2>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}<ul class="messages" role="status">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
+                {% endwith %}
+                <form action="{{ url_for('addCompetition') }}" method="post" class="stacked-form">
+                    <label for="name">Nom de la compétition</label>
+                    <input type="text" name="name" id="name" maxlength="80" placeholder="Ex. Coupe de printemps" required>
+                    <label for="date">Date et heure</label>
+                    <input type="datetime-local" name="date" id="date" required>
+                    <label for="places">Nombre de places disponibles</label>
+                    <input type="number" name="places" id="places" min="1" max="10000" required>
+                    <button class="button button-primary button-wide" type="submit">Ajouter au calendrier <span aria-hidden="true">→</span></button>
+                </form>
+            </section>
+        </section>
+    </main>
+    <footer class="site-footer"><span>GUDLFT</span><span>Un calendrier clair pour tous les clubs</span></footer>
+</div>
+</body>
+</html>

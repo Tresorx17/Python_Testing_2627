@@ -1,27 +1,65 @@
-<html lang="en">
+<!doctype html>
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GUDLFT Registration</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#071426">
+    <title>GUDLFT | Portail des compétitions</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Welcome to the GUDLFT Registration Portal!</h1>
-    Please enter your secretary email to continue:
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
-{% endwith %}    
-<form action="showSummary" method="post">
-        <label for="email">Email:</label>
-        <input type="email" name="email" id=""/>
-        <button type="submit">Enter</button>
-    </form>
-<p><a href="{{ url_for('leaderboard') }}">View club points leaderboard</a></p>
+<div class="app-shell">
+    <header class="topbar">
+        <a class="brand" href="{{ url_for('index') }}" aria-label="GUDLFT, accueil">
+            <span class="brand-mark">G</span>
+            <span>GUDLFT <small>CLUB PORTAL</small></span>
+        </a>
+        <nav class="top-nav" aria-label="Navigation principale">
+            <a href="{{ url_for('leaderboard') }}">Classement des clubs</a>
+            <a class="nav-cta" href="{{ url_for('addCompetition') }}">Ajouter un événement</a>
+        </nav>
+    </header>
+
+    <main class="login-layout">
+        <section class="hero-panel">
+            <p class="eyebrow">LA SAISON COMMENCE ICI</p>
+            <h1>Le prochain rendez-vous sportif vous attend.</h1>
+            <p class="hero-copy">Retrouvez les compétitions, gérez vos réservations et suivez les points de votre club en un seul endroit.</p>
+            <div class="hero-signature">
+                <span class="signature-line"></span>
+                <span>Compétition · Esprit d’équipe · Performance</span>
+            </div>
+            <div class="hero-orbit" aria-hidden="true"><span>G</span></div>
+        </section>
+
+        <section class="login-card" aria-labelledby="login-title">
+            <div class="card-icon" aria-hidden="true">↗</div>
+            <p class="eyebrow">ACCÈS CLUB</p>
+            <h2 id="login-title">Connectez-vous</h2>
+            <p class="card-copy">Entrez l’adresse e-mail du secrétaire de votre club pour continuer.</p>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class="messages" role="alert">
+                {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('showSummary') }}" method="post" class="stacked-form">
+                <label for="email">Adresse e-mail</label>
+                <input type="email" name="email" id="email" placeholder="nom@club.fr" autocomplete="email" required>
+                <button class="button button-primary button-wide" type="submit">Accéder à mon espace <span aria-hidden="true">→</span></button>
+            </form>
+            <p class="form-footnote">Votre adresse doit être associée à un club inscrit.</p>
+        </section>
+    </main>
+
+    <section class="quick-links" aria-label="Autres espaces">
+        <a href="{{ url_for('leaderboard') }}"><span class="quick-icon">01</span><span><strong>Classement</strong><small>Découvrez les points des clubs</small></span><span class="quick-arrow">→</span></a>
+        <a href="{{ url_for('addCompetition') }}"><span class="quick-icon quick-icon-red">02</span><span><strong>Organiser</strong><small>Ajouter un événement au calendrier</small></span><span class="quick-arrow">→</span></a>
+    </section>
+    <footer class="site-footer"><span>GUDLFT</span><span>Portail de réservation des compétitions</span></footer>
+</div>
 </body>
 </html>

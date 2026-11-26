@@ -27,5 +27,5 @@ class RegistrationPortalUser(HttpUser):
             name="POST /purchasePlaces (points update)",
             catch_response=True,
         ) as response:
-            if response.status_code != 200 or "Great-booking complete!" not in response.text:
+            if response.status_code != 200 or "Réservation confirmée." not in response.text:
                 response.failure("Booking did not complete successfully")

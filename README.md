@@ -78,4 +78,30 @@ Merci !
  6. Flake8 Report 
     
 
+## Vérification et tests
+
+Les tests sont rangés par niveau dans `tests/unit`, `tests/integration` et `tests/functional`. Les données des tests sont isolées dans des répertoires temporaires afin de préserver les fichiers JSON utilisés par l’application.
+
+Installer les dépendances dans l’environnement virtuel :
+
+```powershell
+.\.venv313\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Lancer les tests et mesurer la couverture de `server.py` :
+
+```powershell
+.\.venv313\Scripts\python.exe -m pytest --cov=server --cov-report=term-missing -rs
+```
+
+Les tests fonctionnels pilotent Chrome avec Selenium. Si Windows bloque le pilote, vérifier la politique d’exécution ou exécuter cette partie dans un environnement autorisant le WebDriver.
+
+Pour l’essai de charge, lancer l’application avec un répertoire de données JSON temporaire sur `127.0.0.1:5010`, puis utiliser Locust :
+
+```powershell
+.\.venv313\Scripts\python.exe -m locust -f .\performance\locustfile.py --headless -u 6 -r 6 -t 15s --host http://127.0.0.1:5010
+```
+
+Le plan détaillé, le rapport de tests et le rapport de performance sont dans `reports/`.
+
 

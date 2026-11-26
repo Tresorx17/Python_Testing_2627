@@ -1,7 +1,7 @@
 import server
 
 
-def test_public_leaderboard_shows_clubs_sorted_by_points(monkeypatch):
+def test_public_leaderboard_shows_clubs_sorted_by_points(monkeypatch, client):
     monkeypatch.setattr(
         server,
         "clubs",
@@ -12,7 +12,7 @@ def test_public_leaderboard_shows_clubs_sorted_by_points(monkeypatch):
         ],
     )
 
-    response = server.app.test_client().get("/leaderboard")
+    response = client.get("/leaderboard")
     page = response.get_data(as_text=True)
 
     assert response.status_code == 200
@@ -22,8 +22,17 @@ def test_public_leaderboard_shows_clubs_sorted_by_points(monkeypatch):
     assert page.index("Club High") < page.index("Club Middle")
     assert page.index("Club Middle") < page.index("Club Low")
 
-def test_stylesheet_is_available():
-    response = server.app.test_client().get("/static/style.css")
+def test_stylesheet_is_available(client):
+    response = client.get("/static/style.css")
 
     assert response.status_code == 200
     assert "--ink:" in response.get_data(as_text=True)
+
+
+def test_empty_leaderboard_has_informative_message(monkeypatch, client):
+    monkeypatch.setattr(server, "clubs", [])
+
+    response = client.get("/leaderboard")
+
+    assert response.status_code == 200
+    assert "Aucun club à afficher" in response.get_data(as_text=True)

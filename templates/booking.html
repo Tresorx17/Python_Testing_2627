@@ -1,18 +1,46 @@
-<html lang="en">
+<!doctype html>
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking for {{competition['name']}} || GUDLFT</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#071426">
+    <title>Réserver {{ competition["name"] }} | GUDLFT</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>{{competition['name']}}</h2>
-    Places available: {{competition['numberOfPlaces']}}
-    <form action="/purchasePlaces" method="post">
-        <input type="hidden" name="club" value="{{club['name']}}">
-        <input type="hidden" name="competition" value="{{competition['name']}}">
-        <label for="places">How many places?</label><input type="number" name="places" id=""/>
-        <button type="submit">Book</button>
-    </form>
+<div class="app-shell">
+    <header class="topbar">
+        <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">G</span><span>GUDLFT <small>CLUB PORTAL</small></span></a>
+        <nav class="top-nav"><a href="{{ url_for('leaderboard') }}">Classement</a><a href="{{ url_for('logout') }}">Déconnexion</a></nav>
+    </header>
+    <main class="narrow-content">
+        <a class="back-link" href="{{ url_for('showSummary') }}">← Retour à mon espace</a>
+        <section class="booking-layout">
+            <div class="booking-intro">
+                <p class="eyebrow">RÉSERVATION</p>
+                <h1>{{ competition["name"] }}</h1>
+                <p class="hero-copy">Confirmez le nombre de places souhaité pour votre club.</p>
+                <div class="booking-detail"><span class="detail-icon">◷</span><span><small>Date de l’événement</small><strong>{{ competition["date"] }}</strong></span></div>
+                <div class="booking-detail"><span class="detail-icon detail-icon-red">⌖</span><span><small>Places restantes</small><strong>{{ competition["numberOfPlaces"] }}</strong></span></div>
+            </div>
+            <section class="booking-card">
+                <h2>Choisir vos places</h2>
+                <p class="card-copy">Club : <strong>{{ club["name"] }}</strong></p>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}<ul class="messages" role="alert">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
+                {% endwith %}
+                <form action="{{ url_for('purchasePlaces') }}" method="post" class="stacked-form">
+                    <input type="hidden" name="club" value="{{ club['name'] }}">
+                    <input type="hidden" name="competition" value="{{ competition['name'] }}">
+                    <label for="places">Nombre de places</label>
+                    <input type="number" name="places" id="places" min="1" max="12" inputmode="numeric" required>
+                    <p class="form-footnote">Maximum : 12 places par réservation. Votre solde sera mis à jour après validation.</p>
+                    <button class="button button-primary button-wide" type="submit">Confirmer la réservation <span aria-hidden="true">→</span></button>
+                </form>
+            </section>
+        </section>
+    </main>
+    <footer class="site-footer"><span>GUDLFT</span><span>Votre réservation, en toute simplicité</span></footer>
+</div>
 </body>
 </html>

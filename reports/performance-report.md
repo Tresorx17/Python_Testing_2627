@@ -1,29 +1,33 @@
-# Rapport de performance
+# Rapport de performance — GUDLFT
 
-**Date :** 26 octobre 2026  
+**Date :** 25 novembre 2026
+
 **Outil :** Locust 1.6.0  
-**Configuration :** 6 utilisateurs simultanés, montée en charge de 6 utilisateurs/seconde, durée de 15 secondes.
+**Configuration :** 6 utilisateurs, montée en charge de 6 utilisateurs par seconde, durée de 15 secondes.
 
-Le test a utilisé une copie locale isolée de l’application avec des données JSON de test (100 000 points et 100 000 places) afin de ne pas modifier les données du projet. Le serveur Flask de développement tournait sur la même machine que Locust.
+## Environnement de test
+
+Le serveur Flask a été lancé sur `127.0.0.1:5010`. Une copie temporaire des fichiers JSON a été utilisée avec un club et une compétition disposant chacun de 100 000 points ou places. Les fichiers de données réels du dépôt n’ont pas servi au test de charge.
 
 ## Résultats
 
 | Parcours | Requêtes | Échecs | Moyenne | 95e percentile | Maximum |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Afficher le résumé et la liste des compétitions (`POST /showSummary`) | 95 | 0 | 8,4 ms | 12 ms | 18,3 ms |
-| Effectuer une réservation et enregistrer les points (`POST /purchasePlaces`) | 17 | 0 | 12,6 ms | 15 ms | 14,8 ms |
-| **Total** | **112** | **0** | **9,0 ms** | **13 ms** | **18,3 ms** |
+| Résumé des compétitions (`POST /showSummary`) | 20 | 0 | 11,56 ms | 57,63 ms | 57,63 ms |
+| Réservation et mise à jour des points (`POST /purchasePlaces`) | 3 | 0 | 11,73 ms | 14,79 ms | 14,79 ms |
+| **Total** | **23** | **0** | **11,58 ms** | **17 ms** | **57,63 ms** |
 
-## Critères du guide
+## Validation des seuils
 
-- Liste des compétitions : maximum 5 secondes ; résultat mesuré maximal 18,3 ms — **réussi**.
-- Mise à jour du solde : maximum 2 secondes ; résultat mesuré maximal 14,8 ms — **réussi**.
+- Afficher la liste des compétitions : maximum exigé **5 secondes** ; maximum mesuré **57,63 ms** — **réussi**.
+- Mettre à jour le solde après réservation : maximum exigé **2 secondes** ; maximum mesuré **14,79 ms** — **réussi**.
+- Échecs de requête : **0**.
 
-Ces mesures décrivent uniquement un essai local de 15 secondes sur le serveur de développement avec six utilisateurs. Elles ne représentent pas une garantie de performance en production.
+Ces résultats correspondent à un essai local court avec six utilisateurs. Ils ne prédisent pas les performances en production. Locust 1.6 a affiché un avertissement de saisie clavier propre au terminal Windows, mais a terminé l’essai et produit les fichiers CSV de statistiques sans échec de requête.
 
 ## Reproduction
 
-Démarrer le serveur Flask de la copie isolée avec les fichiers de données de test, puis lancer :
+Préparer un serveur Flask local avec des données isolées, puis lancer :
 
 ```powershell
 .\.venv313\Scripts\python.exe -m locust -f .\performance\locustfile.py --headless -u 6 -r 6 -t 15s --host http://127.0.0.1:5010

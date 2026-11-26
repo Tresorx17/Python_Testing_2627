@@ -6,4 +6,6 @@ MarkupSafe==1.1.1
 Werkzeug==1.0.1
 pytest==9.1.1
 coverage==7.17.0
+pytest-cov==7.1.0
+selenium==4.54.0
 locust==1.6.0
